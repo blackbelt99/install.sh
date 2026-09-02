@@ -54,30 +54,35 @@ fi
 show_menu() {
     clear
 
-    echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║${WHITE}                 BLACKBELT VPS CONSOLE                  ${CYAN}║${NC}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${WHITE}║${NC}  ${GREEN}●${NC} ${WHITE}Status:${NC} ${GREEN}ONLINE${NC}        ${WHITE}Mode:${NC} ${YELLOW}VM CONTROL${NC}       ${CYAN}║${NC}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${WHITE}║${NC}                                                        ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}       ${BLUE}██████╗ ██╗      █████╗  ██████╗██╗  ██╗${NC}       ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}       ${BLUE}██╔══██╗██║     ██╔══██╗██╔════╝██║ ██╔╝${NC}       ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}       ${BLUE}██████╔╝██║     ███████║██║     █████╔╝ ${NC}       ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}       ${BLUE}██╔══██╗██║     ██╔══██║██║     ██╔═██╗ ${NC}       ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}       ${BLUE}██████╔╝███████╗██║  ██║╚██████╗██║  ██╗${NC}       ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}       ${BLUE}╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝${NC}       ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}                                                        ${CYAN}║${NC}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${YELLOW}║${NC}  SELECT ACTION                                            ${CYAN}║${NC}"
-    echo -e "${CYAN}╠══════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${WHITE}║${NC}  ${GREEN}[1]${NC}  Create & Boot New Ubuntu VPS Instance             ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}  ${GREEN}[2]${NC}  Restart Existing VPS Instance                     ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}  ${GREEN}[3]${NC}  Modify TCP Port Forward Rules                     ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}  ${GREEN}[4]${NC}  Clean VPS Cache & Configuration                   ${CYAN}║${NC}"
-    echo -e "${WHITE}║${NC}  ${RED}[5]${NC}  Exit Console                                         ${CYAN}║${NC}"
-    echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+    # BLACKBELT // MODERN TERMINAL UI
+    echo -e "${BLUE}┌──────────────────────────────────────────────────────────────┐${NC}"
+    echo -e "${BLUE}│${NC} ${WHITE}BLACKBELT${NC} ${CYAN}//${NC} ${WHITE}VPS MANAGEMENT TERMINAL${NC}             ${GREEN}● READY${NC} ${BLUE}│${NC}"
+    echo -e "${BLUE}├──────────────────────────────────────────────────────────────┤${NC}"
+    echo -e "${BLUE}│${NC}  ${YELLOW}SYSTEM${NC}    ${GREEN}ONLINE${NC}       ${YELLOW}ENGINE${NC}    QEMU / VM           ${BLUE}│${NC}"
+    echo -e "${BLUE}│${NC}  ${YELLOW}PROFILE${NC}   UBUNTU 22.04   ${YELLOW}NETWORK${NC}  TCP FORWARD       ${BLUE}│${NC}"
+    echo -e "${BLUE}└──────────────────────────────────────────────────────────────┘${NC}"
     echo ""
-    echo -ne "${WHITE}blackbelt@vps ~ # ${NC}"
+
+    echo -e "${CYAN}  BLACKBELT CONTROL CENTER${NC}"
+    echo -e "  ${WHITE}Choose a module to continue:${NC}"
+    echo ""
+
+    echo -e "  ${BLUE}01${NC}  ${WHITE}CREATE VM${NC}       ${GREEN}New Ubuntu instance${NC}"
+    echo -e "      └─ Provision storage, CPU, RAM and boot the VM"
+    echo ""
+    echo -e "  ${BLUE}02${NC}  ${WHITE}RESTART VM${NC}      ${GREEN}Existing instance${NC}"
+    echo -e "      └─ Restart the current Ubuntu VM channel"
+    echo ""
+    echo -e "  ${BLUE}03${NC}  ${WHITE}NETWORK${NC}         ${GREEN}TCP port forwarding${NC}"
+    echo -e "      └─ Add or modify host → VM forwarding rules"
+    echo ""
+    echo -e "  ${BLUE}04${NC}  ${WHITE}MAINTENANCE${NC}     ${GREEN}Cache & configuration${NC}"
+    echo -e "      └─ Clean local VPS files and temporary data"
+    echo ""
+    echo -e "  ${RED}05${NC}  ${WHITE}CLOSE TERMINAL${NC}  ${RED}Exit${NC}"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────────────${NC}"
+    echo -ne "${WHITE}blackbelt${NC}@${CYAN}core${NC} ${BLUE}›${NC} "
     read CHOICE
 
     case $CHOICE in
@@ -86,7 +91,7 @@ show_menu() {
         3) configure_tcp ;;
         4) clean_vps ;;
         5) exit 0 ;;
-        *) echo -e "${RED}✗ Invalid option. Choose 1-5.${NC}"; sleep 2; show_menu ;;
+        *) echo -e "${RED}Invalid module. Use 1-5.${NC}"; sleep 2; show_menu ;;
     esac
 }
 
@@ -94,7 +99,7 @@ show_menu() {
 create_vps() {
     clear
     echo -e "${RED}==========================================================${NC}"
-    echo -e "${WHITE}BLACKBELT // VM CONFIGURATION${NC}"
+    echo -e "${WHITE}BLACKBELT // CREATE VM${NC}"
     echo -e "${RED}==========================================================${NC}"
     echo ""
     
@@ -155,7 +160,7 @@ EOF
 configure_tcp() {
     clear
     echo -e "${YELLOW}==========================================================${NC}"
-    echo -e "${WHITE}BLACKBELT // TCP PORT CONTROL ${NC}"
+    echo -e "${WHITE}BLACKBELT // NETWORK CONTROL ${NC}"
     echo -e "${YELLOW}==========================================================${NC}"
     echo ""
     if [ -f ".vps_env" ]; then
