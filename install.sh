@@ -2,7 +2,7 @@
 
 # BLACKBELT // MAIN LAUNCHER
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; PURPLE='\033[0;35m'; CYAN='\033[0;36m'; WHITE='\033[1;37m'; GRAY='\033[0;90m'; NC='\033[0m'
-DASHBOARD_URL="https://raw.githubusercontent.com/blackbelt99/my-installer/main/vps-dashboard.sh"
+DASHBOARD_URL="https://raw.githubusercontent.com/blackbelt99/install.sh/main/vps-dashboard.sh"
 
 while true; do
     clear
