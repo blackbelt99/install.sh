@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Clear terminal for clean dashboard view
+clear
+
 # ==========================================
 # 🌟 PREMIUM COLOR CODES & FX
 # ==========================================
@@ -10,33 +13,7 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 WHITE='\033[1;37m'
-GRAY='\033[0;90m'
-MAGENTA='\033[38;5;46m'
-ORANGE='\033[38;5;51m'
-TEAL='\033[38;5;93m'
 NC='\033[0m'
-
-# ==========================================
-# PATHS / STATE (shared across all functions)
-# ==========================================
-BASE_DIR="/home/blackbelt"
-IMAGE="${BASE_DIR}/ubuntu22.qcow2"
-SEED="${BASE_DIR}/seed.img"
-USER_DATA="${BASE_DIR}/user-data"
-ENV_FILE="${BASE_DIR}/.vps_env"
-
-# AUTOMATED ROOT/SUDO PRIVILEGE CHECK
-if [ "$(id -u)" -eq 0 ]; then
-    SUDO_CMD=""
-else
-    SUDO_CMD="sudo"
-fi
-
-load_env() {
-    if [ -f "$ENV_FILE" ]; then
-        source "$ENV_FILE"
-    fi
-}
 
 # FUNCTION: TYPING EFFECT ANIMATION
 type_effect() {
@@ -64,53 +41,15 @@ loading_bar() {
     echo -e " ${GREEN}DONE!${NC}"
 }
 
-valid_number() { [[ "${1:-}" =~ ^[0-9]+$ ]]; }
-port_in_use() {
-    local p="$1"
-    if command -v ss >/dev/null 2>&1; then ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]${p}$"; else return 1; fi
-}
+# AUTOMATED ROOT/SUDO PRIVILEGE CHECK
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO_CMD=""
+else
+    SUDO_CMD="sudo"
+fi
 
 # ==========================================
-# OUTER MAIN MENU (from vps_dashboard (1).sh)
-# ==========================================
-show_menu() {
-    clear
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -e "${WHITE}          [🥋 BLACKBELT PREMIUM VPS DASHBOARD 🥋]          ${NC}"
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -e "${WHITE}                ┌─────────────────────────┐               ${NC}"
-    echo -e "${WHITE}                │   ${MAGENTA}█▀▀█ █──█ █▄─▄█ █▀▀█${WHITE}  │  <[BLACKBELT V2] ${NC}"
-    echo -e "${WHITE}                │   ${MAGENTA}█▄▄█ █▄▄█ █ █ █ █▄▄█${WHITE}  │               ${NC}"
-    echo -e "${WHITE}                └─────────────────────────┘               ${NC}"
-    echo -e "${ORANGE}                   (█)─(█)     (█)─(█)                   ${NC}"
-    echo -e "${ORANGE}                  █████████   █████████                  ${NC}"
-    echo -e "${MAGENTA}                 ███████████████████████                 ${NC}"
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -e "${CYAN}  ____  _        _    ____ _  ______  _____ _   _____ ${NC}"
-    echo -e "${CYAN} | __ )| |      / \\  / ___| |/ / __ )| ____| | |_   _|${NC}"
-    echo -e "${CYAN} |  _ \\| |     / _ \\| |   | ' /|  _ \\|  _| | |   | |  ${NC}"
-    echo -e "${CYAN} | |_) | |___ / ___ \\ |___| . \\| |_) | |___| |___| |  ${NC}"
-    echo -e "${CYAN} |____/|_____/_/   \\_\\____|_|\\_\\____/|_____|_____|_|  ${NC}"
-    echo -e "${TEAL}==========================================================${NC}"
-    echo ""
-    echo -e "${YELLOW}👉 SELECT AN OPTION TO PROCEED FROM LIST:${NC}"
-    echo ""
-    echo -e "  ${CYAN}[1]${NC} VPS Control Panel (Create/Restart/Network/System)"
-    echo -e "  ${CYAN}[2]${NC} Exit Dashboard"
-    echo ""
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -ne "${WHITE}🔹 Enter Choice [1-2]: ${NC}"
-    read -r CHOICE
-
-    case "${CHOICE:-}" in
-        1) vps_dashboard ;;
-        2) exit 0 ;;
-        *) echo -e "${RED}❌ Invalid Choice! Please select 1-2.${NC}"; sleep 2 ;;
-    esac
-}
-
-# ==========================================
-# INNER VPS CONTROL PANEL (from second file)
+# MAIN INTERACTIVE LIST MENU
 # ==========================================
 vps_dashboard() {
     while true; do
@@ -122,7 +61,7 @@ vps_dashboard() {
         echo -e "${CYAN}●${NC} ${WHITE}SYSTEM STATUS${NC}"
         echo -e "  Host       : ${GREEN}$(hostname)${NC}"
         echo -e "  Network    : ${GREEN}● CONNECTED${NC}"
-        echo -e "  VM Image   : ${GRAY}${IMAGE}${NC}"
+        echo -e "  VM Image   : ${GRAY}/home/blackbelt/ubuntu22.qcow2${NC}"
         echo ""
         echo -e "${CYAN}──────────────────────────────────────────────────────────${NC}"
         echo ""
@@ -162,9 +101,15 @@ vps_dashboard() {
     done
 }
 
+
+valid_number() { [[ "${1:-}" =~ ^[0-9]+$ ]]; }
+port_in_use() {
+    local p="$1"
+    if command -v ss >/dev/null 2>&1; then ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]${p}$"; else return 1; fi
+}
 system_info() { clear; echo -e "${CYAN}BLACKBELT // SYSTEM${NC}"; echo "Hostname: $(hostname)"; echo "Kernel: $(uname -r)"; echo "CPU: $(nproc 2>/dev/null || echo unknown)"; echo "Memory: $(free -h 2>/dev/null | awk '/^Mem:/ {print $2}' || echo unknown)"; echo ""; read -rp "Press Enter to return..."; }
 toolbox() { clear; echo -e "${CYAN}BLACKBELT // TOOLBOX${NC}"; echo "QEMU: $(command -v qemu-system-x86_64 || echo not-installed)"; echo "qemu-img: $(command -v qemu-img || echo not-installed)"; echo "cloud-localds: $(command -v cloud-localds || echo not-installed)"; echo ""; read -rp "Press Enter to return..."; }
-extras() { clear; echo -e "${CYAN}BLACKBELT // EXTRAS${NC}"; echo "Saved config: ${ENV_FILE}"; echo ""; read -rp "Press Enter to return..."; }
+extras() { clear; echo -e "${CYAN}BLACKBELT // EXTRAS${NC}"; echo "Saved config: /home/blackbelt/.vps_env"; echo ""; read -rp "Press Enter to return..."; }
 
 # STEP 1: CONFIGURE STORAGE & DOWNLOAD CLOUD ARCHITECTURE
 create_vps() {
@@ -173,42 +118,42 @@ create_vps() {
     echo -e "${WHITE}BLACKBELT // VM CONFIGURATION${NC}"
     echo -e "${RED}==========================================================${NC}"
     echo ""
-
+    
     echo -ne "${BLUE}🔹 Enter RAM Size in GB (e.g., 4, 8, 16, 32): ${NC}"
-    read -r RAM_GB
+    read RAM_GB
     echo -ne "${BLUE}🔹 Enter CPU Cores (e.g., 2, 4, 8): ${NC}"
-    read -r CPU_CORES
+    read CPU_CORES
     echo -ne "${BLUE}🔹 Enter Disk Space to ADD in GB (e.g., 10, 20): ${NC}"
-    read -r DISK_ADD
+    read DISK_ADD
     echo -ne "${BLUE}🔹 Create Username (Default: ubuntu): ${NC}"
-    read -r USER_NAME
+    read USER_NAME
     USER_NAME=${USER_NAME:-ubuntu}
     echo -ne "${BLUE}🔹 Create Password (Default: 1234): ${NC}"
-    read -r USER_PASS
+    read USER_PASS
     USER_PASS=${USER_PASS:-1234}
-
+    
     # 2222 is set as the foundational port base
     TCP_HOST_PORT=${TCP_HOST_PORT:-2222}
     TCP_GUEST_PORT=22
 
     echo ""
-    echo -e "${YELLOW}⏳ Installing background core dependencies... Please wait.${NC}"
+    echo -e "${YELLOW}⏳ Background core dependencies install ho rahi hain... Please wait.${NC}"
     echo ""
-
+    
     $SUDO_CMD apt-get update -y > /dev/null 2>&1
     $SUDO_CMD apt-get install -y qemu-system-x86 qemu-utils wget cloud-image-utils curl > /dev/null 2>&1
-
+    
     # Custom absolute path architecture build
-    $SUDO_CMD mkdir -p "$BASE_DIR" > /dev/null 2>&1
-
-    if [ ! -f "$IMAGE" ]; then
-        echo -e "${YELLOW}📥 Downloading Ubuntu 22.04 Cloud Image to ${BASE_DIR}/...${NC}"
-        $SUDO_CMD wget -q --show-progress https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -O "$IMAGE"
-        $SUDO_CMD chmod 666 "$IMAGE"
+    $SUDO_CMD mkdir -p /home/blackbelt > /dev/null 2>&1
+    
+    if [ ! -f "/home/blackbelt/ubuntu22.qcow2" ]; then
+        echo -e "${YELLOW}📥 Downloading Ubuntu 22.04 Cloud Image to /home/blackbelt/...${NC}"
+        $SUDO_CMD wget -q --show-progress https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -O /home/blackbelt/ubuntu22.qcow2
+        $SUDO_CMD chmod 666 /home/blackbelt/ubuntu22.qcow2
     else
-        echo -e "${GREEN}✅ Ubuntu Image Cache Found at ${BASE_DIR}/.${NC}"
+        echo -e "${GREEN}✅ Ubuntu Image Cache Found at /home/blackbelt/.${NC}"
     fi
-
+    
     loading_bar "Building Cloud-Init Profile"
     $SUDO_CMD tee "$USER_DATA" >/dev/null <<EOF
 #cloud-config
@@ -221,8 +166,8 @@ EOF
 
     $SUDO_CMD cloud-localds "$SEED" "$USER_DATA" > /dev/null 2>&1
     loading_bar "Allocating VM Disk Space"
-    $SUDO_CMD qemu-img resize "$IMAGE" +${DISK_ADD}G > /dev/null 2>&1
-
+    $SUDO_CMD qemu-img resize /home/blackbelt/ubuntu22.qcow2 +${DISK_ADD}G > /dev/null 2>&1
+    
     save_env
     boot_qemu
 }
@@ -234,18 +179,20 @@ configure_tcp() {
     echo -e "${WHITE}BLACKBELT // TCP PORT CONTROL ${NC}"
     echo -e "${YELLOW}==========================================================${NC}"
     echo ""
-    load_env
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+    fi
     echo -e "Current Target Host Port  : ${CYAN}${TCP_HOST_PORT:-2222}${NC}"
     echo -e "Current Guest VM Port     : ${CYAN}${TCP_GUEST_PORT:-22}${NC}"
     echo ""
     echo -ne "${BLUE}🔹 Enter NEW External Host Port (Default base: 2222): ${NC}"
-    read -r NEW_HOST_PORT
+    read NEW_HOST_PORT
     TCP_HOST_PORT=${NEW_HOST_PORT:-2222}
-
+    
     echo -ne "${BLUE}🔹 Enter Internal Guest Port (Default SSH: 22): ${NC}"
-    read -r NEW_GUEST_PORT
+    read NEW_GUEST_PORT
     TCP_GUEST_PORT=${NEW_GUEST_PORT:-22}
-
+    
     save_env
     echo ""
     echo -e "${GREEN}✅ TCP Rule Updated Successfully!${NC}"
@@ -265,7 +212,9 @@ save_env() {
 
 # STEP 3: POPOUT LINK AND RUN THE MASTER EXECUTION COMMAND
 boot_qemu() {
-    load_env
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+    fi
 
     TCP_HOST_PORT=${TCP_HOST_PORT:-2222}
     TCP_GUEST_PORT=${TCP_GUEST_PORT:-22}
@@ -282,17 +231,17 @@ boot_qemu() {
     type_effect "BLACKBELT CORE INITIALIZED! STARTING VM CHANNEL..." 0.02
     echo -e "${GREEN}==========================================================${NC}"
     echo ""
-
+    
     sshx_log=$(mktemp)
     curl -sSf https://sshx.io/get | sh -s run > "$sshx_log" 2>&1 &
-
+    
     sleep 5
     SSHX_URL=$(grep -o 'https://sshx.io/s/[a-zA-Z0-9]*' "$sshx_log" | head -n 1)
     rm -f "$sshx_log"
 
-    QEMU_LOG="${BASE_DIR}/qemu.log"
+    QEMU_LOG="/home/blackbelt/qemu.log"
     qemu-system-x86_64 \
-        -hda "$IMAGE" \
+        -hda /home/blackbelt/ubuntu22.qcow2 \
         -m "$RAM_VALUE" \
         -smp "${CPU_CORES:-4}" \
         -drive "file=${SEED},format=raw" \
@@ -330,6 +279,8 @@ boot_qemu() {
     echo ""
     echo -e "${GRAY}QEMU PID: ${QEMU_PID}${NC}"
     read -rp "Press Enter to return to VPS dashboard..."
+
+
 }
 
 # RESTART PIPELINE
@@ -363,8 +314,4 @@ clean_vps() {
     sleep 2
 }
 
-# EXECUTE TRIGGER — outer main menu loop
-clear
-while true; do
-    show_menu
-done
+vps_dashboard
