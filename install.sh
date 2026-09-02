@@ -13,9 +13,9 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 WHITE='\033[1;37m'
-MAGENTA='\033[1;35m'
-ORANGE='\033[38;5;208m'
-TEAL='\033[38;5;30m'
+MAGENTA='\033[38;5;46m'
+ORANGE='\033[38;5;51m'
+TEAL='\033[38;5;93m'
 NC='\033[0m'
 
 # FUNCTION: TYPING EFFECT ANIMATION
@@ -122,7 +122,7 @@ create_vps() {
     TCP_GUEST_PORT=22
 
     echo ""
-    echo -e "${YELLOW}⏳ Background core dependencies install ho rahi hain... Please wait.${NC}"
+    echo -e "${YELLOW}⏳ Installing background core dependencies... Please wait.${NC}"
     echo ""
     
     $SUDO_CMD apt-get update -y > /dev/null 2>&1
