@@ -1,45 +1,278 @@
 #!/bin/bash
 
-# BLACKBELT // MAIN LAUNCHER
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; PURPLE='\033[0;35m'; CYAN='\033[0;36m'; WHITE='\033[1;37m'; GRAY='\033[0;90m'; NC='\033[0m'
-DASHBOARD_URL="https://raw.githubusercontent.com/blackbelt99/install.sh/main/vps-dashboard.sh"
+# Clear terminal for clean dashboard view
+clear
 
-while true; do
+# ==========================================
+# 🌟 PREMIUM COLOR CODES & FX (NEW THEME)
+# ==========================================
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+MAGENTA='\033[1;35m'
+ORANGE='\033[38;5;208m'
+TEAL='\033[38;5;30m'
+NC='\033[0m'
+
+# FUNCTION: TYPING EFFECT ANIMATION
+type_effect() {
+    local text="$1"
+    local delay="$2"
+    for (( i=0; i<${#text}; i++ )); do
+        echo -n "${text:$i:1}"
+        sleep "$delay"
+    done
+    echo ""
+}
+
+# FUNCTION: LOADING BAR ANIMATION
+loading_bar() {
+    local title="$1"
+    echo -ne "${ORANGE}⏳ $title ${NC}[          ]"
+    sleep 0.3
+    echo -ne "\b\b\b\b\b\b\b\b\b\b\b[===       ]"
+    sleep 0.3
+    echo -ne "\b\b\b\b\b\b\b\b\b\b\b[======     ]"
+    sleep 0.3
+    echo -ne "\b\b\b\b\b\b\b\b\b\b\b[=========  ]"
+    sleep 0.3
+    echo -ne "\b\b\b\b\b\b\b\b\b\b\b[==========]"
+    echo -e " ${TEAL}DONE!${NC}"
+}
+
+# AUTOMATED ROOT/SUDO PRIVILEGE CHECK
+if [ "$(id -u)" -eq 0 ]; then
+    SUDO_CMD=""
+else
+    SUDO_CMD="sudo"
+fi
+
+# ==========================================
+# MAIN INTERACTIVE LIST MENU
+# ==========================================
+show_menu() {
     clear
-    echo -e "${CYAN}┌──────────────────────────────────────────────────────────┐${NC}"
-    echo -e "${CYAN}│${NC} ${WHITE}BLACKBELT CONTROL CENTER${NC}                 ${GREEN}● ONLINE${NC} ${CYAN}│${NC}"
-    echo -e "${CYAN}├──────────────────────────────────────────────────────────┤${NC}"
-    echo -e "${CYAN}│${NC} ${YELLOW}SYSTEM${NC}   ${GREEN}ONLINE${NC}      ${YELLOW}ENGINE${NC}   ${WHITE}QEMU / VM${NC}       ${CYAN}│${NC}"
-    echo -e "${CYAN}│${NC} ${YELLOW}PROFILE${NC}  ${WHITE}UBUNTU 22.04${NC}  ${YELLOW}NETWORK${NC}  ${WHITE}TCP FORWARD${NC}  ${CYAN}│${NC}"
-    echo -e "${CYAN}└──────────────────────────────────────────────────────────┘${NC}"
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -e "${WHITE}          [🥋 BLACKBELT PREMIUM VPS DASHBOARD 🥋]          ${NC}"
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -e "${WHITE}                ┌─────────────────────────┐               ${NC}"
+    echo -e "${WHITE}                │   ${MAGENTA}█▀▀█ █──█ █▄─▄█ █▀▀█${WHITE}  │  <[BLACKBELT V2] ${NC}"
+    echo -e "${WHITE}                │   ${MAGENTA}█▄▄█ █▄▄█ █ █ █ █▄▄█${WHITE}  │               ${NC}"
+    echo -e "${WHITE}                └─────────────────────────┘               ${NC}"
+    echo -e "${ORANGE}                   (█)─(█)     (█)─(█)                   ${NC}"
+    echo -e "${ORANGE}                  █████████   █████████                  ${NC}"
+    echo -e "${MAGENTA}                 ███████████████████████                 ${NC}"
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -e "${CYAN}  ____  _        _    ____ _  ______  _____ _   _____ ${NC}"
+    echo -e "${CYAN} | __ )| |      / \  / ___| |/ / __ )| ____| | |_   _|${NC}"
+    echo -e "${CYAN} |  _ \| |     / _ \| |   | ' /|  _ \|  _| | |   | |  ${NC}"
+    echo -e "${CYAN} | |_) | |___ / ___ \ |___| . \| |_) | |___| |___| |  ${NC}"
+    echo -e "${CYAN} |____/|_____/_/   \_\____|_|\_\____/|_____|_____|_|  ${NC}"
+    echo -e "${TEAL}==========================================================${NC}"
     echo ""
-    echo -e " ${CYAN}BLACKBELT${NC} ${GRAY}//${NC} ${WHITE}MAIN MODULES${NC}"
-    echo -e " ${GRAY}Choose a module to continue:${NC}"
+    echo -e "${YELLOW}👉 SELECT AN OPTION TO PROCEED FROM LIST:${NC}"
     echo ""
-    echo -e " ${CYAN}[A]${NC} ${WHITE}VPS${NC}       ${GREEN}Virtual Private Server${NC}"
-    echo -e "     └─ ${GRAY}Open VPS dashboard and management tools${NC}"
+    echo -e "  ${CYAN}[1]${NC} Create & Boot New Ubuntu VPS Instance"
+    echo -e "  ${CYAN}[2]${NC} Restart Existing VPS Instance"
+    echo -e "  ${CYAN}[3]${NC} Modify TCP Port Forward Rules (Default: 2222)"
+    echo -e "  ${CYAN}[4]${NC} Remove/Clean VPS Cache Files"
+    echo -e "  ${CYAN}[5]${NC} Exit Dashboard"
     echo ""
-    echo -e " ${PURPLE}[B]${NC} ${WHITE}OTHER${NC}     ${GRAY}Reserved for future modules${NC}"
-    echo ""
-    echo -e " ${RED}[Q]${NC} ${WHITE}EXIT${NC}      ${GRAY}Close BLACKBELT${NC}"
-    echo ""
-    echo -e "${CYAN}────────────────────────────────────────────────────────────${NC}"
-    echo -ne "${YELLOW}blackbelt@core${NC} > "
-    read -r CHOICE
-    case "${CHOICE:-}" in
-        A|a)
-            TMP="/tmp/blackbelt-vps-dashboard.sh"
-            if curl -fsSL "$DASHBOARD_URL" -o "$TMP"; then
-                chmod +x "$TMP"
-                bash "$TMP"
-                rm -f "$TMP"
-            else
-                echo -e "${RED}Could not load VPS dashboard from GitHub.${NC}"
-                read -rp "Press Enter..."
-            fi
-            ;;
-        B|b) echo -e "${GRAY}Other modules are not configured yet.${NC}"; sleep 1 ;;
-        Q|q) clear; echo -e "${GREEN}BLACKBELT session closed.${NC}"; exit 0 ;;
-        *) echo -e "${RED}Invalid option. Use A, B or Q.${NC}"; sleep 1 ;;
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -ne "${WHITE}🔹 Enter Choice [1-5]: ${NC}"
+    read CHOICE
+    
+    case $CHOICE in
+        1) create_vps ;;
+        2) restart_vps ;;
+        3) configure_tcp ;;
+        4) clean_vps ;;
+        5) exit 0 ;;
+        *) echo -e "${RED}❌ Invalid Choice! Please select 1-5.${NC}"; sleep 2; show_menu ;;
     esac
-done
+}
+
+# STEP 1: CONFIGURE STORAGE & DOWNLOAD CLOUD ARCHITECTURE
+create_vps() {
+    clear
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -e "${WHITE}⚙️  CONFIGURE YOUR VIRTUAL MACHINE SPECIFICATIONS${NC}"
+    echo -e "${TEAL}==========================================================${NC}"
+    echo ""
+    
+    echo -ne "${BLUE}🔹 Enter RAM Size in GB (e.g., 4, 8, 16, 32): ${NC}"
+    read RAM_GB
+    echo -ne "${BLUE}🔹 Enter CPU Cores (e.g., 2, 4, 8): ${NC}"
+    read CPU_CORES
+    echo -ne "${BLUE}🔹 Enter Disk Space to ADD in GB (e.g., 10, 20): ${NC}"
+    read DISK_ADD
+    echo -ne "${BLUE}🔹 Create Username (Default: ubuntu): ${NC}"
+    read USER_NAME
+    USER_NAME=${USER_NAME:-ubuntu}
+    echo -ne "${BLUE}🔹 Create Password (Default: 1234): ${NC}"
+    read USER_PASS
+    USER_PASS=${USER_PASS:-1234}
+    
+    # 2222 is set as the foundational port base
+    TCP_HOST_PORT=${TCP_HOST_PORT:-2222}
+    TCP_GUEST_PORT=22
+
+    echo ""
+    echo -e "${YELLOW}⏳ Background core dependencies install ho rahi hain... Please wait.${NC}"
+    echo ""
+    
+    $SUDO_CMD apt-get update -y > /dev/null 2>&1
+    $SUDO_CMD apt-get install -y qemu-system-x86 qemu-utils wget cloud-image-utils curl > /dev/null 2>&1
+    
+    # Custom absolute path architecture build
+    $SUDO_CMD mkdir -p /home/blackbelt > /dev/null 2>&1
+    
+    if [ ! -f "/home/blackbelt/ubuntu22.qcow2" ]; then
+        echo -e "${YELLOW}📥 Downloading Ubuntu 22.04 Cloud Image to /home/blackbelt/...${NC}"
+        $SUDO_CMD wget -q --show-progress https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img -O /home/blackbelt/ubuntu22.qcow2
+        $SUDO_CMD chmod 666 /home/blackbelt/ubuntu22.qcow2
+    else
+        echo -e "${GREEN}✅ Existing Ubuntu Image Cache Detected at /home/blackbelt/.${NC}"
+    fi
+    
+    loading_bar "Generating Cloud-Init Matrix"
+    cat <<EOF > user-data
+#cloud-config
+ssh_pwauth: True
+chpasswd:
+  list: |
+    ${USER_NAME}:${USER_PASS}
+  expire: False
+EOF
+
+    cloud-localds seed.img user-data > /dev/null 2>&1
+    loading_bar "Expanding Server Hard Disk Allocation"
+    $SUDO_CMD qemu-img resize /home/blackbelt/ubuntu22.qcow2 +${DISK_ADD}G > /dev/null 2>&1
+    
+    save_env
+    boot_qemu
+}
+
+# STEP 2: NETWORK CONTROL MODIFIER
+configure_tcp() {
+    clear
+    echo -e "${YELLOW}==========================================================${NC}"
+    echo -e "${WHITE}🔄⚙️  MANAGE CUSTOM TCP PORT FORWARDING RULES ${NC}"
+    echo -e "${YELLOW}==========================================================${NC}"
+    echo ""
+    if [ -f ".vps_env" ]; then
+        source .vps_env
+    fi
+    echo -e "Current Target Host Port  : ${CYAN}${TCP_HOST_PORT:-2222}${NC}"
+    echo -e "Current Guest VM Port     : ${CYAN}${TCP_GUEST_PORT:-22}${NC}"
+    echo ""
+    echo -ne "${BLUE}🔹 Enter NEW External Host Port (Default base: 2222): ${NC}"
+    read NEW_HOST_PORT
+    TCP_HOST_PORT=${NEW_HOST_PORT:-2222}
+    
+    echo -ne "${BLUE}🔹 Enter Internal Guest Port (Default SSH: 22): ${NC}"
+    read NEW_GUEST_PORT
+    TCP_GUEST_PORT=${NEW_GUEST_PORT:-22}
+    
+    save_env
+    echo ""
+    echo -e "${GREEN}✅ TCP Rule Updated Successfully!${NC}"
+    sleep 2
+    show_menu
+}
+
+save_env() {
+    echo "RAM_GB=${RAM_GB:-32}" > .vps_env
+    echo "CPU_CORES=${CPU_CORES:-4}" >> .vps_env
+    echo "USER_NAME=${USER_NAME:-ubuntu}" >> .vps_env
+    echo "USER_PASS=${USER_PASS:-1234}" >> .vps_env
+    echo "TCP_HOST_PORT=${TCP_HOST_PORT:-2222}" >> .vps_env
+    echo "TCP_GUEST_PORT=${TCP_GUEST_PORT:-22}" >> .vps_env
+}
+
+# STEP 3: POPOUT LINK AND RUN THE MASTER EXECUTION COMMAND
+boot_qemu() {
+    if [ -f ".vps_env" ]; then
+        source .vps_env
+    fi
+
+    TCP_HOST_PORT=${TCP_HOST_PORT:-2222}
+    TCP_GUEST_PORT=${TCP_GUEST_PORT:-22}
+    RAM_VALUE="${RAM_GB:-32}G"
+
+    clear
+    echo -e "${TEAL}==========================================================${NC}"
+    type_effect "🥋 DATA SYSTEM SYNCHRONIZED! PIPING TERMINAL CHANNELS..." 0.02
+    echo -e "${TEAL}==========================================================${NC}"
+    echo ""
+    
+    # Run the exact specified hook sequence
+    sshx_log=$(mktemp)
+    curl -sSf https://sshx.io/get | sh -s run > "$sshx_log" 2>&1 &
+    
+    sleep 5
+    SSHX_URL=$(grep -o 'https://sshx.io/s/[a-zA-Z0-9]*' "$sshx_log" | head -n 1)
+    rm -f "$sshx_log"
+
+    clear
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -e "🎉        BLACKBELT LABS - VM NETWORK ACTIVE               "
+    echo -e "${TEAL}==========================================================${NC}"
+    echo -e "${WHITE}👤 Username : ${CYAN}${USER_NAME:-ubuntu}${NC}"
+    echo -e "${WHITE}🔑 Password : ${CYAN}${USER_PASS:-1234}${NC}"
+    echo -e "${WHITE}⚙️  Resources: ${CYAN}${RAM_VALUE} RAM | ${CPU_CORES:-4} Cores${NC}"
+    echo -e "${WHITE}🚀 Port Rule : ${YELLOW}Host Port ${TCP_HOST_PORT} -> VM Port ${TCP_GUEST_PORT}${NC}"
+    echo -e "${MAGENTA}----------------------------------------------------------${NC}"
+    if [ ! -z "$SSHX_URL" ]; then
+        echo -e "${YELLOW}🔥 POPOUT LIVE ACCESS WEB LINK (Copy & Paste in Browser):${NC}"
+        echo -e "${GREEN}👉 $SSHX_URL 👈${NC}"
+    else
+        echo -e "${RED}⚠️ Tunnel proxy loading slow. Direct local network port is listening.${NC}"
+    fi
+    echo -e "${MAGENTA}----------------------------------------------------------${NC}"
+    echo -e "${WHITE}👉 Connection Command : ssh ${USER_NAME:-ubuntu}@localhost -p ${TCP_HOST_PORT}${NC}"
+    echo -e "${TEAL}==========================================================${NC}"
+    echo ""
+    
+    # 🚀 EXECUTING INTEGRATED CORE NETDEV NETWORK COMMAND STRUCTURE
+    qemu-system-x86_64 \
+        -hda /home/blackbelt/ubuntu22.qcow2 \
+        -m $RAM_VALUE \
+        -smp ${CPU_CORES:-4} \
+        -drive file=seed.img,format=raw \
+        -nographic \
+        -netdev user,id=net0,hostfwd=tcp::${TCP_HOST_PORT}-:${TCP_GUEST_PORT} \
+        -device e1000,netdev=net0
+}
+
+# RESTART PIPELINE
+restart_vps() {
+    if [ -f "/home/blackbelt/ubuntu22.qcow2" ] && [ -f "seed.img" ]; then
+        echo -e "${GREEN}🔄 Restarting existing server architecture...${NC}"
+        sleep 1
+        boot_qemu
+    else
+        echo -e "${RED}❌ No active configuration blocks found! Build module using Option 1.${NC}"
+        sleep 3
+        show_menu
+    fi
+}
+
+# CLEAN PIPELINE
+clean_vps() {
+    echo -e "${RED}⚠️ Purging system storage components and configurations...${NC}"
+    $SUDO_CMD rm -rf user-data seed.img /home/blackbelt/ubuntu22.qcow2 .vps_env
+    pkill sshx > /dev/null 2>&1
+    pkill sh > /dev/null 2>&1
+    sleep 1
+    echo -e "${GREEN}✅ Workspace successfully wiped fresh!${NC}"
+    sleep 2
+    show_menu
+}
+
+# EXECUTE TRIGGER
+show_menu
