@@ -11,13 +11,10 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 WHITE='\033[1;37m'
 GRAY='\033[0;90m'
-MAGENTA='\033[38;5;46m'
-ORANGE='\033[38;5;51m'
-TEAL='\033[38;5;93m'
 NC='\033[0m'
 
 # ==========================================
-# PATHS / STATE (shared across all functions)
+# PATHS / STATE
 # ==========================================
 BASE_DIR="/home/blackbelt"
 IMAGE="${BASE_DIR}/ubuntu22.qcow2"
@@ -71,46 +68,7 @@ port_in_use() {
 }
 
 # ==========================================
-# OUTER MAIN MENU (from vps_dashboard (1).sh)
-# ==========================================
-show_menu() {
-    clear
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -e "${WHITE}          [🥋 BLACKBELT PREMIUM VPS DASHBOARD 🥋]          ${NC}"
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -e "${WHITE}                ┌─────────────────────────┐               ${NC}"
-    echo -e "${WHITE}                │   ${MAGENTA}█▀▀█ █──█ █▄─▄█ █▀▀█${WHITE}  │  <[BLACKBELT V2] ${NC}"
-    echo -e "${WHITE}                │   ${MAGENTA}█▄▄█ █▄▄█ █ █ █ █▄▄█${WHITE}  │               ${NC}"
-    echo -e "${WHITE}                └─────────────────────────┘               ${NC}"
-    echo -e "${ORANGE}                   (█)─(█)     (█)─(█)                   ${NC}"
-    echo -e "${ORANGE}                  █████████   █████████                  ${NC}"
-    echo -e "${MAGENTA}                 ███████████████████████                 ${NC}"
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -e "${CYAN}  ____  _        _    ____ _  ______  _____ _   _____ ${NC}"
-    echo -e "${CYAN} | __ )| |      / \\  / ___| |/ / __ )| ____| | |_   _|${NC}"
-    echo -e "${CYAN} |  _ \\| |     / _ \\| |   | ' /|  _ \\|  _| | |   | |  ${NC}"
-    echo -e "${CYAN} | |_) | |___ / ___ \\ |___| . \\| |_) | |___| |___| |  ${NC}"
-    echo -e "${CYAN} |____/|_____/_/   \\_\\____|_|\\_\\____/|_____|_____|_|  ${NC}"
-    echo -e "${TEAL}==========================================================${NC}"
-    echo ""
-    echo -e "${YELLOW}👉 SELECT AN OPTION TO PROCEED FROM LIST:${NC}"
-    echo ""
-    echo -e "  ${CYAN}[1]${NC} VPS Control Panel (Create/Restart/Network/System)"
-    echo -e "  ${CYAN}[2]${NC} Exit Dashboard"
-    echo ""
-    echo -e "${TEAL}==========================================================${NC}"
-    echo -ne "${WHITE}🔹 Enter Choice [1-2]: ${NC}"
-    read -r CHOICE
-
-    case "${CHOICE:-}" in
-        1) vps_dashboard ;;
-        2) exit 0 ;;
-        *) echo -e "${RED}❌ Invalid Choice! Please select 1-2.${NC}"; sleep 2 ;;
-    esac
-}
-
-# ==========================================
-# INNER VPS CONTROL PANEL (from second file)
+# VPS CONTROL PANEL MENU
 # ==========================================
 vps_dashboard() {
     while true; do
@@ -192,7 +150,7 @@ create_vps() {
     TCP_GUEST_PORT=22
 
     echo ""
-    echo -e "${YELLOW}⏳ Installing background core dependencies... Please wait.${NC}"
+    echo -e "${YELLOW}⏳ Background core dependencies install ho rahi hain... Please wait.${NC}"
     echo ""
 
     $SUDO_CMD apt-get update -y > /dev/null 2>&1
@@ -363,8 +321,10 @@ clean_vps() {
     sleep 2
 }
 
-# EXECUTE TRIGGER — outer main menu loop
-clear
-while true; do
-    show_menu
-done
+# Only auto-launch the panel when this file is EXECUTED directly
+# (e.g. `bash install.sh`). When it's sourced by vps-dashboard.sh,
+# it just loads the functions and stays quiet.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    clear
+    vps_dashboard
+fi
