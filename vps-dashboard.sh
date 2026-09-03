@@ -15,18 +15,31 @@ TEAL='\033[38;5;93m'
 NC='\033[0m'
 
 # ==========================================
-# LOCATE & LOAD install.sh (same folder as this script)
+# LOCATE & LOAD install.sh
+# Works two ways:
+#  1) Local clone  -> looks for install.sh next to this script
+#  2) curl one-liner (bash <(curl ... vps-dashboard.sh)) -> no local
+#     sibling file exists, so it downloads install.sh from GitHub instead
 # ==========================================
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RAW_INSTALL_URL="https://raw.githubusercontent.com/blackbelt99/install.sh/main/install.sh"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
 INSTALL_SCRIPT="${SCRIPT_DIR}/install.sh"
 
-if [ -f "$INSTALL_SCRIPT" ]; then
+if [ -n "$SCRIPT_DIR" ] && [ -f "$INSTALL_SCRIPT" ]; then
     # Sourcing just loads the vps_dashboard()/create_vps()/etc. functions.
     # install.sh only auto-runs the panel when executed directly on its own.
     source "$INSTALL_SCRIPT"
 else
-    echo -e "${RED}✗ install.sh not found next to vps-dashboard.sh${NC}"
-    echo -e "${YELLOW}  Expected at: ${INSTALL_SCRIPT}${NC}"
+    TMP_INSTALL="$(mktemp)"
+    if curl -fsSL "$RAW_INSTALL_URL" -o "$TMP_INSTALL" 2>/dev/null && [ -s "$TMP_INSTALL" ]; then
+        source "$TMP_INSTALL"
+        rm -f "$TMP_INSTALL"
+    else
+        rm -f "$TMP_INSTALL"
+        echo -e "${RED}✗ Could not load install.sh (not found locally and download failed).${NC}"
+        echo -e "${YELLOW}  Tried: ${RAW_INSTALL_URL}${NC}"
+    fi
 fi
 
 # ==========================================
